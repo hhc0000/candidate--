@@ -162,10 +162,16 @@ textarea { resize: vertical; min-height: 80px; }
     <div class="section-title">사진</div>
     <div class="photo-guide">
       <p>📁 <strong>photos</strong> 폴더에 아래 파일명으로 사진을 넣으세요:</p>
-      <p>• <strong>hero.jpg</strong> — 메인 배경 (세로형 3:4)</p>
+      <p>• <strong>hero.jpg 또는 hero.mp4</strong> — 메인 배경 (이미지 또는 영상)</p>
       <p>• <strong>profile.jpg</strong> — 프로필 배경 (가로형 16:9)</p>
       <p>• <strong>gallery1.jpg, gallery2.jpg ...</strong> — 현장 활동 (가로형)</p>
     </div>
+    <label>히어로 배경 타입</label>
+    <select id="heroType" onchange="updateHeroGuide()">
+      <option value="image">이미지 (hero.jpg)</option>
+      <option value="video">영상 (hero.mp4)</option>
+    </select>
+    <div class="hint" id="heroGuide" style="margin-bottom:12px">photos 폴더에 hero.jpg 파일을 넣으세요</div>
     <label>갤러리 사진 캡션</label>
     <div class="hint" style="margin-bottom:8px">photos 폴더의 gallery1.jpg, gallery2.jpg... 에 맞춰 캡션을 입력하세요</div>
     <div id="gallery-list"></div>
@@ -284,6 +290,13 @@ document.getElementById('color').addEventListener('input', (e) => {
 // ===== 이스케이프 =====
 function esc(s) { return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"'); }
 
+// ===== 히어로 타입 =====
+function updateHeroGuide() {
+  const type = document.getElementById('heroType').value;
+  document.getElementById('heroGuide').textContent =
+    type === 'video' ? 'photos 폴더에 hero.mp4 파일을 넣으세요' : 'photos 폴더에 hero.jpg 파일을 넣으세요';
+}
+
 // ===== config.js 생성 =====
 function generateConfig() {
   const v = (id) => document.getElementById(id).value.trim();
@@ -359,7 +372,7 @@ ${videos.join(',\n')}
   ],
 
   photos: {
-    hero: "photos/hero.jpg",
+    hero: "${document.getElementById('heroType').value === 'video' ? 'photos/hero.mp4' : 'photos/hero.jpg'}",
     profile: "photos/profile.jpg",
     gallery: [
 ${gallery.join(',\n')}
@@ -439,6 +452,11 @@ function loadExisting() {
         document.getElementById('facebook').value = C.contact?.facebook || '';
         document.getElementById('donation-account').value = C.donation?.account || '';
         document.getElementById('donation-holder').value = C.donation?.holder || '';
+
+        // 히어로 타입 감지
+        const heroSrc = C.photos?.hero || '';
+        document.getElementById('heroType').value = heroSrc.match(/\.(mp4|webm|mov)$/i) ? 'video' : 'image';
+        updateHeroGuide();
 
         alert('설정을 불러왔습니다!');
       } catch (err) {
