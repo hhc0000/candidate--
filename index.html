@@ -283,6 +283,7 @@ section { padding: 0 24px; }
   padding: 0 24px;
   transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: grab;
+  touch-action: pan-y;
 }
 .gallery-track.dragging { cursor: grabbing; transition: none; }
 .gallery-item {
@@ -736,9 +737,11 @@ section { padding: 0 24px; }
 
   // Drag/swipe
   let dragStartX = 0, dragDelta = 0, isDragging = false;
+  let dragStartTime = 0;
   galleryTrack.addEventListener('pointerdown', (e) => {
     isDragging = true;
     dragStartX = e.clientX;
+    dragStartTime = Date.now();
     dragDelta = 0;
     galleryTrack.classList.add('dragging');
   });
@@ -757,9 +760,12 @@ section { padding: 0 24px; }
     if (!isDragging) return;
     isDragging = false;
     galleryTrack.classList.remove('dragging');
+    const elapsed = Date.now() - dragStartTime;
+    const velocity = Math.abs(dragDelta) / Math.max(elapsed, 1);
+
     if (Math.abs(dragDelta) > 10) {
-      // Was dragging
-      if (Math.abs(dragDelta) > 60) {
+      // Was dragging — flick (fast swipe) or distance-based
+      if (Math.abs(dragDelta) > 40 || velocity > 0.3) {
         goToSlide(currentSlide + (dragDelta < 0 ? 1 : -1));
       } else {
         goToSlide(currentSlide);
