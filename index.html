@@ -450,7 +450,7 @@ section { padding: 0 24px; }
   <section id="sec-greeting" data-section="greeting">
     <div class="sh reveal">
       <div class="sh-label">인사말</div>
-      <div class="sh-title">주민 여러분께<br>드리는 인사</div>
+      <div class="sh-title" id="greeting-heading"></div>
     </div>
     <div class="greeting-card reveal">
       <p class="greeting-text" id="greeting-text"></p>
@@ -592,6 +592,8 @@ section { padding: 0 24px; }
   document.getElementById('hero-district').textContent = `${C.district} ${C.type}`;
 
   // Greeting (handwriting sign)
+  const honorific = C.honorific || '유권자';
+  document.getElementById('greeting-heading').innerHTML = `${honorific} 여러분께<br>드리는 인사`;
   document.getElementById('greeting-text').innerHTML = C.greeting.replace(/\n/g, '<br>');
   document.getElementById('greeting-title-line').textContent = `${C.district} ${C.type || '후보'}`;
   document.getElementById('greeting-name').textContent = C.name;

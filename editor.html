@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>후보 홈페이지 설정 편집기</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'Noto Sans KR', sans-serif; background: #f5f5f7; color: #1d1d1f; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 24px 20px 100px; }
+h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+.subtitle { font-size: 14px; color: #86868b; margin-bottom: 32px; }
+.section { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+.section-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: #1A56DB; }
+label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 4px; margin-top: 12px; }
+label:first-child { margin-top: 0; }
+input, textarea, select { width: 100%; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 15px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+input:focus, textarea:focus, select:focus { border-color: #1A56DB; }
+textarea { resize: vertical; min-height: 80px; }
+.hint { font-size: 12px; color: #aaa; margin-top: 2px; }
+.color-row { display: flex; gap: 8px; align-items: center; }
+.color-row input[type="color"] { width: 44px; height: 38px; padding: 2px; border-radius: 8px; cursor: pointer; }
+.color-row input[type="text"] { flex: 1; }
+.color-presets { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.color-preset { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s; }
+.color-preset:hover, .color-preset.active { border-color: #333; }
+
+/* 약력/공약 동적 리스트 */
+.list-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; padding: 12px; background: #f9f9fb; border-radius: 10px; }
+.list-item input, .list-item textarea { background: #fff; }
+.list-item .fields { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.list-item .fields .row { display: flex; gap: 6px; }
+.list-item .fields .row input:first-child { width: 70px; flex-shrink: 0; }
+.btn-remove { width: 32px; height: 32px; border: none; background: #ff3b30; color: #fff; border-radius: 8px; cursor: pointer; font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.btn-add { width: 100%; padding: 10px; border: 2px dashed #ccc; border-radius: 10px; background: none; font-size: 14px; color: #888; cursor: pointer; margin-top: 4px; }
+.btn-add:hover { border-color: #1A56DB; color: #1A56DB; }
+
+/* 갤러리 */
+.gallery-item .fields .row input:first-child { width: 140px; }
+
+/* 유튜브 */
+.video-item { display: flex; gap: 8px; margin-bottom: 8px; }
+.video-item input { flex: 1; }
+
+/* 하단 버튼 */
+.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e0e0e0; padding: 12px 20px; display: flex; gap: 10px; justify-content: center; }
+.btn-primary { padding: 12px 32px; background: #222; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; }
+.btn-primary:hover { background: #444; }
+.btn-secondary { padding: 12px 24px; background: #f0f0f2; color: #333; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
+
+/* 이모지 피커 */
+.emoji-picker {
+  position: absolute; left: 0; top: 100%; z-index: 100;
+  background: #fff; border: 1px solid #e0e0e0; border-radius: 12px;
+  padding: 10px; width: 260px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  display: none;
+}
+.emoji-picker.open { display: block; }
+.emoji-picker-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.emoji-picker-grid span {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; cursor: pointer; border-radius: 8px; transition: background 0.15s;
+}
+.emoji-picker-grid span:hover { background: #f0f4ff; }
+.emoji-picker-tabs { display: flex; gap: 2px; margin-bottom: 8px; overflow-x: auto; }
+.emoji-picker-tabs button {
+  padding: 4px 8px; border: none; background: #f5f5f7; border-radius: 6px;
+  font-size: 16px; cursor: pointer; flex-shrink: 0;
+}
+.emoji-picker-tabs button.active { background: #1A56DB; color: #fff; }
+
+/* 사진 안내 */
+.photo-guide { padding: 12px; background: #f0f4ff; border-radius: 10px; margin-top: 12px; }
+.photo-guide p { font-size: 13px; color: #555; line-height: 1.6; }
+.photo-guide strong { color: #1A56DB; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📋 후보 홈페이지 설정</h1>
+  <p class="subtitle">아래 내용을 입력하고 "config.js 다운로드" 버튼을 누르세요.<br>다운받은 파일을 기존 config.js와 교체하면 됩니다.</p>
+
+  <!-- 기본 정보 -->
+  <div class="section">
+    <div class="section-title">기본 정보</div>
+    <label>후보 이름</label>
+    <input type="text" id="name" placeholder="예: 홍길동">
+    <label>정당</label>
+    <input type="text" id="party" placeholder="예: 더불어민주당">
+    <label>기호 번호</label>
+    <input type="text" id="number" placeholder="없으면 비워두세요">
+    <div class="hint">교육감 등 번호가 없는 경우 비워두세요</div>
+    <label>후보 / 예비후보</label>
+    <select id="type">
+      <option value="예비후보">예비후보</option>
+      <option value="후보">후보</option>
+    </select>
+    <label>선거구</label>
+    <input type="text" id="district" placeholder="예: 경북 교육감, 강남구 갑">
+    <label>호칭 (인사말 제목에 사용)</label>
+    <select id="honorific">
+      <option value="유권자">유권자</option>
+      <option value="도민">도민</option>
+      <option value="시민">시민</option>
+      <option value="주민">주민</option>
+      <option value="구민">구민</option>
+      <option value="군민">군민</option>
+      <option value="국민">국민</option>
+    </select>
+    <div class="hint">"○○ 여러분께 드리는 인사"에 표시됩니다</div>
+    <label>슬로건</label>
+    <textarea id="slogan" rows="2" placeholder="예: 경북에 새로운 희망과 변화의 바람을 만들겠습니다."></textarea>
+    <div class="hint">줄바꿈이 필요하면 엔터를 치세요</div>
+    <label>정당 컬러</label>
+    <div class="color-row">
+      <input type="color" id="colorPicker" value="#003B96">
+      <input type="text" id="color" value="#003B96" placeholder="#1A56DB">
+    </div>
+    <div class="color-presets">
+      <div class="color-preset" style="background:#003B96" title="더불어민주당" data-color="#003B96"></div>
+      <div class="color-preset" style="background:#E61E2B" title="국민의힘" data-color="#E61E2B"></div>
+      <div class="color-preset" style="background:#0073CF" title="조국혁신당" data-color="#0073CF"></div>
+      <div class="color-preset" style="background:#D6001C" title="진보당" data-color="#D6001C"></div>
+      <div class="color-preset" style="background:#FF7210" title="개혁신당" data-color="#FF7210"></div>
+      <div class="color-preset" style="background:#F58400" title="사회민주당" data-color="#F58400"></div>
+    </div>
+  </div>
+
+  <!-- 인사말 -->
+  <div class="section">
+    <div class="section-title">인사말 (편지 내용)</div>
+    <label>인사말 전문</label>
+    <textarea id="greeting" rows="8" placeholder="안녕하십니까, ..."></textarea>
+    <div class="hint">문단을 나누려면 빈 줄을 하나 넣으세요</div>
+  </div>
+
+  <!-- 약력 -->
+  <div class="section">
+    <div class="section-title">약력</div>
+    <div class="hint" style="margin-bottom:12px">최근 경력부터 위에 입력하세요</div>
+    <div id="career-list"></div>
+    <button class="btn-add" onclick="addCareer()">+ 약력 추가</button>
+  </div>
+
+  <!-- 공약 -->
+  <div class="section">
+    <div class="section-title">핵심 공약</div>
+    <div id="pledge-list"></div>
+    <button class="btn-add" onclick="addPledge()">+ 공약 추가</button>
+  </div>
+
+  <!-- 유튜브 영상 -->
+  <div class="section">
+    <div class="section-title">유튜브 영상</div>
+    <div class="hint" style="margin-bottom:12px">유튜브 영상 주소를 붙여넣으세요</div>
+    <div id="video-list"></div>
+    <button class="btn-add" onclick="addVideo()">+ 영상 추가</button>
+  </div>
+
+  <!-- 사진 -->
+  <div class="section">
+    <div class="section-title">사진</div>
+    <div class="photo-guide">
+      <p>📁 <strong>photos</strong> 폴더에 아래 파일명으로 사진을 넣으세요:</p>
+      <p>• <strong>hero.jpg</strong> — 메인 배경 (세로형 3:4)</p>
+      <p>• <strong>profile.jpg</strong> — 프로필 배경 (가로형 16:9)</p>
+      <p>• <strong>gallery1.jpg, gallery2.jpg ...</strong> — 현장 활동 (가로형)</p>
+    </div>
+    <label>갤러리 사진 캡션</label>
+    <div class="hint" style="margin-bottom:8px">photos 폴더의 gallery1.jpg, gallery2.jpg... 에 맞춰 캡션을 입력하세요</div>
+    <div id="gallery-list"></div>
+    <button class="btn-add" onclick="addGallery()">+ 갤러리 사진 추가</button>
+  </div>
+
+  <!-- 연락처 -->
+  <div class="section">
+    <div class="section-title">연락처</div>
+    <div class="hint" style="margin-bottom:12px">필요 없는 항목은 비워두세요</div>
+    <label>전화번호</label>
+    <input type="text" id="phone" placeholder="010-1234-5678">
+    <label>네이버 블로그</label>
+    <input type="text" id="blog" placeholder="https://blog.naver.com/...">
+    <label>인스타그램</label>
+    <input type="text" id="instagram" placeholder="https://instagram.com/...">
+    <label>유튜브 채널</label>
+    <input type="text" id="youtube" placeholder="https://youtube.com/@...">
+    <label>페이스북</label>
+    <input type="text" id="facebook" placeholder="https://facebook.com/...">
+  </div>
+</div>
+
+<!-- 하단 버튼 -->
+<div class="bottom-bar">
+  <button class="btn-secondary" onclick="loadExisting()">기존 설정 불러오기</button>
+  <button class="btn-primary" onclick="downloadConfig()">📥 config.js 다운로드</button>
+</div>
+
+<script>
+// ===== 동적 리스트 =====
+function addCareer(year = '', text = '') {
+  const list = document.getElementById('career-list');
+  const div = document.createElement('div');
+  div.className = 'list-item';
+  div.innerHTML = `
+    <div class="fields"><div class="row">
+      <input type="text" placeholder="연도" value="${year}">
+      <input type="text" placeholder="내용" value="${text}">
+    </div></div>
+    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  list.appendChild(div);
+}
+
+function addPledge(icon = '', title = '', desc = '') {
+  const list = document.getElementById('pledge-list');
+  const div = document.createElement('div');
+  div.className = 'list-item';
+  div.innerHTML = `
+    <div class="fields">
+      <div class="row">
+        <div class="emoji-wrap" style="position:relative">
+          <input type="text" class="emoji-input" placeholder="🏫" value="${icon}" style="width:50px;text-align:center;font-size:20px;cursor:pointer" readonly onclick="openEmojiPicker(this)">
+        </div>
+        <input type="text" placeholder="공약 제목" value="${title}">
+      </div>
+      <input type="text" placeholder="한줄 설명" value="${desc}">
+    </div>
+    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  list.appendChild(div);
+}
+
+function addVideo(url = '') {
+  const list = document.getElementById('video-list');
+  const div = document.createElement('div');
+  div.className = 'video-item';
+  div.innerHTML = `
+    <input type="text" placeholder="https://www.youtube.com/watch?v=..." value="${url}">
+    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  list.appendChild(div);
+}
+
+function addGallery(filename = '', caption = '') {
+  const list = document.getElementById('gallery-list');
+  const idx = list.children.length + 1;
+  const div = document.createElement('div');
+  div.className = 'list-item gallery-item';
+  div.innerHTML = `
+    <div class="fields"><div class="row">
+      <input type="text" placeholder="파일명" value="${filename || 'gallery' + idx + '.jpg'}" style="width:140px">
+      <input type="text" placeholder="캡션 (설명)" value="${caption}">
+    </div></div>
+    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  list.appendChild(div);
+}
+
+// ===== 컬러 프리셋 =====
+document.querySelectorAll('.color-preset').forEach(el => {
+  el.addEventListener('click', () => {
+    const c = el.dataset.color;
+    document.getElementById('color').value = c;
+    document.getElementById('colorPicker').value = c;
+    document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  });
+});
+document.getElementById('colorPicker').addEventListener('input', (e) => {
+  document.getElementById('color').value = e.target.value;
+});
+document.getElementById('color').addEventListener('input', (e) => {
+  if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+    document.getElementById('colorPicker').value = e.target.value;
+  }
+});
+
+// ===== 이스케이프 =====
+function esc(s) { return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"'); }
+
+// ===== config.js 생성 =====
+function generateConfig() {
+  const v = (id) => document.getElementById(id).value.trim();
+  const num = v('number') ? parseInt(v('number')) : null;
+  const slogan = esc(v('slogan')).replace(/\n/g, '\\n');
+  const greeting = esc(v('greeting')).replace(/\n\n/g, '\\n\\n').replace(/\n/g, '\\n');
+
+  // 약력
+  const careers = [];
+  document.querySelectorAll('#career-list .list-item').forEach(item => {
+    const inputs = item.querySelectorAll('input');
+    if (inputs[0].value.trim() || inputs[1].value.trim()) {
+      careers.push(`    { year: "${esc(inputs[0].value.trim())}", text: "${esc(inputs[1].value.trim())}" }`);
+    }
+  });
+
+  // 공약
+  const pledges = [];
+  document.querySelectorAll('#pledge-list .list-item').forEach(item => {
+    const inputs = item.querySelectorAll('input');
+    if (inputs[1].value.trim()) {
+      pledges.push(`    { icon: "${esc(inputs[0].value.trim())}", title: "${esc(inputs[1].value.trim())}", desc: "${esc(inputs[2].value.trim())}" }`);
+    }
+  });
+
+  // 영상
+  const videos = [];
+  document.querySelectorAll('#video-list .video-item input').forEach(input => {
+    if (input.value.trim()) {
+      videos.push(`    { url: "${esc(input.value.trim())}" }`);
+    }
+  });
+
+  // 갤러리
+  const gallery = [];
+  document.querySelectorAll('#gallery-list .gallery-item').forEach(item => {
+    const inputs = item.querySelectorAll('input');
+    if (inputs[0].value.trim()) {
+      gallery.push(`      { src: "photos/${esc(inputs[0].value.trim())}", caption: "${esc(inputs[1].value.trim())}" }`);
+    }
+  });
+
+  // 연락처
+  const contacts = [];
+  if (v('phone')) contacts.push(`    phone: "${esc(v('phone'))}"`);
+  if (v('blog')) contacts.push(`    blog: "${esc(v('blog'))}"`);
+  if (v('instagram')) contacts.push(`    instagram: "${esc(v('instagram'))}"`);
+  if (v('youtube')) contacts.push(`    youtube: "${esc(v('youtube'))}"`);
+  if (v('facebook')) contacts.push(`    facebook: "${esc(v('facebook'))}"`);
+
+  return `const CONFIG = {
+  name: "${esc(v('name'))}",
+  party: "${esc(v('party'))}",
+  number: ${num === null ? 'null' : num},
+  type: "${esc(v('type'))}",
+  district: "${esc(v('district'))}",
+  honorific: "${esc(v('honorific'))}",
+  slogan: "${slogan}",
+  color: "${esc(v('color'))}",
+
+  greeting: "${greeting}",
+
+  career: [
+${careers.join(',\n')}
+  ],
+
+  pledges: [
+${pledges.join(',\n')}
+  ],
+
+  videos: [
+${videos.join(',\n')}
+  ],
+
+  photos: {
+    hero: "photos/hero.jpg",
+    profile: "photos/profile.jpg",
+    gallery: [
+${gallery.join(',\n')}
+    ]
+  },
+
+  contact: {
+${contacts.join(',\n')}
+  },
+
+  ogImage: "photos/og.jpg",
+};
+`;
+}
+
+// ===== 다운로드 =====
+function downloadConfig() {
+  const content = generateConfig();
+  const blob = new Blob([content], { type: 'text/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'config.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  alert('config.js가 다운로드되었습니다!\n\n이 파일을 홈페이지 폴더의 기존 config.js와 교체하세요.');
+}
+
+// ===== 기존 설정 불러오기 =====
+function loadExisting() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.js';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const code = ev.target.result.replace(/const\s+CONFIG/, 'var CONFIG');
+        eval(code);
+        const C = CONFIG;
+        document.getElementById('name').value = C.name || '';
+        document.getElementById('party').value = C.party || '';
+        document.getElementById('number').value = C.number || '';
+        document.getElementById('type').value = C.type || '예비후보';
+        document.getElementById('district').value = C.district || '';
+        document.getElementById('honorific').value = C.honorific || '유권자';
+        document.getElementById('slogan').value = (C.slogan || '').replace(/\\n/g, '\n');
+        document.getElementById('color').value = C.color || '#1A56DB';
+        document.getElementById('colorPicker').value = C.color || '#1A56DB';
+        document.getElementById('greeting').value = (C.greeting || '').replace(/\\n/g, '\n');
+
+        document.getElementById('career-list').innerHTML = '';
+        (C.career || []).forEach(c => addCareer(c.year, c.text));
+
+        document.getElementById('pledge-list').innerHTML = '';
+        (C.pledges || []).forEach(p => addPledge(p.icon, p.title, p.desc));
+
+        document.getElementById('video-list').innerHTML = '';
+        (C.videos || []).forEach(v => addVideo(v.url));
+
+        document.getElementById('gallery-list').innerHTML = '';
+        (C.photos?.gallery || []).forEach(g => {
+          const filename = g.src.replace('photos/', '');
+          addGallery(filename, g.caption);
+        });
+
+        document.getElementById('phone').value = C.contact?.phone || '';
+        document.getElementById('blog').value = C.contact?.blog || '';
+        document.getElementById('instagram').value = C.contact?.instagram || '';
+        document.getElementById('youtube').value = C.contact?.youtube || '';
+        document.getElementById('facebook').value = C.contact?.facebook || '';
+
+        alert('설정을 불러왔습니다!');
+      } catch (err) {
+        alert('파일을 읽는 중 오류가 발생했습니다.\nconfig.js 파일이 맞는지 확인해주세요.');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ===== 이모지 피커 =====
+const emojiCategories = {
+  '자주 쓰는': ['🏫','📚','🎓','👕','📋','🚌','📝','🏥','🌳','👶','🏠','💼','🤝','📢','💡','🔑','⚖️','🛡️','🌍','❤️','⭐'],
+  '건물': ['🏫','🏥','🏠','🏢','🏗️','🏭','🏟️','🏛️','⛪','🏘️','🏰','🏪','🏬','🏣','🏤','🏦','🏨','🏩','💒','🗼'],
+  '교통': ['🚌','🚇','🚃','🚆','🚊','🚎','🚍','🚐','🚗','🚕','🚙','🛣️','🛤️','✈️','🚀','🚲','🛵','🚶','🏃','🚑'],
+  '사람': ['👶','👧','👦','👩','👨','👵','👴','🧑‍🎓','🧑‍🏫','🧑‍⚕️','🧑‍💼','🧑‍🔧','🧑‍🌾','🧑‍🍳','👨‍👩‍👧','👨‍👩‍👦','🤱','🧑‍🤝‍🧑','💪','🙌'],
+  '자연': ['🌳','🌲','🌿','☘️','🍀','🌱','🌾','🌻','🌺','🌸','💐','🌈','☀️','🌙','⭐','💧','🌊','🏔️','🌄','🍃'],
+  '기타': ['📚','📝','📋','💡','🔑','⚖️','🛡️','🤝','📢','💼','🎯','🔔','📌','✅','❤️','💙','💚','🧡','💜','🔥']
+};
+
+let currentPicker = null;
+
+function openEmojiPicker(inputEl) {
+  // 기존 피커 닫기
+  document.querySelectorAll('.emoji-picker').forEach(p => p.remove());
+
+  const picker = document.createElement('div');
+  picker.className = 'emoji-picker open';
+
+  const tabs = document.createElement('div');
+  tabs.className = 'emoji-picker-tabs';
+
+  const grid = document.createElement('div');
+  grid.className = 'emoji-picker-grid';
+
+  const categories = Object.keys(emojiCategories);
+
+  function showCategory(cat) {
+    grid.innerHTML = '';
+    emojiCategories[cat].forEach(emoji => {
+      const span = document.createElement('span');
+      span.textContent = emoji;
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();
+        inputEl.value = emoji;
+        picker.remove();
+      });
+      grid.appendChild(span);
+    });
+    tabs.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.textContent === cat));
+  }
+
+  categories.forEach((cat, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = cat;
+    if (i === 0) btn.classList.add('active');
+    btn.addEventListener('click', (e) => { e.stopPropagation(); showCategory(cat); });
+    tabs.appendChild(btn);
+  });
+
+  picker.appendChild(tabs);
+  picker.appendChild(grid);
+  showCategory(categories[0]);
+
+  inputEl.parentElement.appendChild(picker);
+  currentPicker = picker;
+}
+
+// 바깥 클릭 시 피커 닫기
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.emoji-wrap')) {
+    document.querySelectorAll('.emoji-picker').forEach(p => p.remove());
+  }
+});
+
+// 초기 빈 항목 추가
+addCareer(); addCareer(); addCareer();
+addPledge(); addPledge(); addPledge();
+addGallery(); addGallery(); addGallery();
+</script>
+</body>
+</html>
