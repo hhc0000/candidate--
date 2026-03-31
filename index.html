@@ -377,6 +377,24 @@ section { padding: 0 24px; }
 }
 .footer-divider { width: 100%; height: 1px; background: var(--border); margin-bottom: 24px; }
 
+/* ===== DONATION ===== */
+.donation-box {
+  margin-top: 64px; padding: 28px 24px;
+  background: var(--primary-light); border: 2px solid var(--primary);
+  border-radius: var(--radius); text-align: center;
+}
+.donation-title {
+  font-size: 14px; font-weight: 700; color: var(--primary);
+  margin-bottom: 12px; letter-spacing: 1px;
+}
+.donation-account {
+  font-size: 22px; font-weight: 900; color: var(--text);
+  letter-spacing: 0.5px; margin-bottom: 6px;
+}
+.donation-holder {
+  font-size: 14px; color: var(--text-secondary); font-weight: 500;
+}
+
 /* ===== FLOATING BTN ===== */
 .float-contact {
   position: fixed; bottom: 28px; right: 20px; z-index: 100;
@@ -515,6 +533,15 @@ section { padding: 0 24px; }
       <h3 id="cta-title"></h3>
       <p id="cta-desc"></p>
       <div class="cta-buttons" id="cta-buttons"></div>
+    </div>
+  </section>
+
+  <!-- DONATION -->
+  <section id="sec-donation" style="padding: 0 24px; display: none;">
+    <div class="donation-box">
+      <div class="donation-title">후원 계좌</div>
+      <div class="donation-account" id="donation-account"></div>
+      <div class="donation-holder" id="donation-holder"></div>
     </div>
   </section>
 
@@ -660,28 +687,44 @@ section { padding: 0 24px; }
   const dotsContainer = document.getElementById('gallery-dots');
   const galleryData = C.photos.gallery;
 
-  galleryData.forEach((g, i) => {
+  // 원본 + 복제본을 넣어 무한 루프 효과
+  const totalOriginal = galleryData.length;
+  const extendedData = [...galleryData, ...galleryData, ...galleryData];
+  extendedData.forEach((g, i) => {
     galleryTrack.innerHTML += `
-      <div class="gallery-item" data-idx="${i}">
+      <div class="gallery-item" data-idx="${i % totalOriginal}">
         <img src="${g.src}" alt="${g.caption}" loading="lazy">
         <div class="gallery-caption">${g.caption}</div>
       </div>`;
+  });
+  galleryData.forEach((g, i) => {
     const dot = document.createElement('div');
     dot.className = 'gallery-dot' + (i === 0 ? ' active' : '');
     dotsContainer.appendChild(dot);
   });
 
-  let currentSlide = 0;
+  let currentSlide = totalOriginal; // 중간 세트에서 시작
   const slideWidth = 294; // 280 + 14 gap
   const dots = dotsContainer.children;
 
-  function goToSlide(idx) {
+  function goToSlide(idx, animate = true) {
     currentSlide = idx;
-    if (currentSlide >= galleryData.length) currentSlide = 0;
-    if (currentSlide < 0) currentSlide = galleryData.length - 1;
+    if (!animate) galleryTrack.style.transition = 'none';
     galleryTrack.style.transform = `translateX(${-currentSlide * slideWidth + 24}px)`;
-    Array.from(dots).forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+    if (!animate) requestAnimationFrame(() => { galleryTrack.style.transition = ''; });
+    // dot 표시는 원본 인덱스 기준
+    const dotIdx = ((currentSlide % totalOriginal) + totalOriginal) % totalOriginal;
+    Array.from(dots).forEach((d, i) => d.classList.toggle('active', i === dotIdx));
   }
+
+  // 끝에 도달하면 조용히 리셋
+  galleryTrack.addEventListener('transitionend', () => {
+    if (currentSlide >= totalOriginal * 2) {
+      goToSlide(currentSlide - totalOriginal, false);
+    } else if (currentSlide < totalOriginal) {
+      goToSlide(currentSlide + totalOriginal, false);
+    }
+  });
 
   // Auto-slide every 4s
   let autoSlide = setInterval(() => goToSlide(currentSlide + 1), 4000);
@@ -749,7 +792,7 @@ section { padding: 0 24px; }
     document.body.style.overflow = '';
   }
 
-  goToSlide(0);
+  goToSlide(totalOriginal, false);
 
   // ========== CTA — 전화, 블로그, 인스타, 유튜브 ==========
   document.getElementById('cta-title').innerHTML = `${C.name} ${C.type}에게<br>연락하기`;
@@ -785,6 +828,14 @@ section { padding: 0 24px; }
   // Float
   if (C.contact.phone) {
     document.getElementById('float-btn').href = `tel:${C.contact.phone}`;
+  }
+
+  // Donation
+  if (C.donation && C.donation.account) {
+    const donationSection = document.getElementById('sec-donation');
+    donationSection.style.display = '';
+    document.getElementById('donation-account').textContent = C.donation.account;
+    document.getElementById('donation-holder').textContent = C.donation.holder || '';
   }
 
   // Footer

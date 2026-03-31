@@ -187,6 +187,16 @@ textarea { resize: vertical; min-height: 80px; }
     <label>페이스북</label>
     <input type="text" id="facebook" placeholder="https://facebook.com/...">
   </div>
+
+  <!-- 후원 계좌 -->
+  <div class="section">
+    <div class="section-title">후원 계좌</div>
+    <div class="hint" style="margin-bottom:12px">필요 없으면 비워두세요</div>
+    <label>계좌번호 (은행 포함)</label>
+    <input type="text" id="donation-account" placeholder="예: 농협 301-0380-6259-41">
+    <label>예금주</label>
+    <input type="text" id="donation-holder" placeholder="예: 예금주: 홍길동 후원회(선거명)">
+  </div>
 </div>
 
 <!-- 하단 버튼 -->
@@ -359,7 +369,12 @@ ${gallery.join(',\n')}
   contact: {
 ${contacts.join(',\n')}
   },
-
+${v('donation-account') ? `
+  donation: {
+    account: "${esc(v('donation-account'))}",
+    holder: "${esc(v('donation-holder'))}",
+  },
+` : ''}
   ogImage: "photos/og.jpg",
 };
 `;
@@ -422,6 +437,8 @@ function loadExisting() {
         document.getElementById('instagram').value = C.contact?.instagram || '';
         document.getElementById('youtube').value = C.contact?.youtube || '';
         document.getElementById('facebook').value = C.contact?.facebook || '';
+        document.getElementById('donation-account').value = C.donation?.account || '';
+        document.getElementById('donation-holder').value = C.donation?.holder || '';
 
         alert('설정을 불러왔습니다!');
       } catch (err) {
