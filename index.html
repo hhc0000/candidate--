@@ -66,6 +66,13 @@ section { padding: 0 24px; }
   will-change: transform;
   transition: transform 0.05s linear;
 }
+.hero-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  z-index: 0;
+  will-change: transform;
+}
 .hero-bg-placeholder {
   position: absolute; inset: 0;
   background: linear-gradient(160deg, #f8f8fa 0%, #e8e8ed 40%, #d4d4d9 100%);
@@ -110,8 +117,8 @@ section { padding: 0 24px; }
   line-height: 1.55; letter-spacing: -0.3px;
 }
 .hero-district {
-  margin-top: 20px; font-size: 13px; color: var(--text-tertiary);
-  font-weight: 400; letter-spacing: 0.5px;
+  margin-top: 20px; font-size: 16px; color: var(--text-primary);
+  font-weight: 500; letter-spacing: 0.5px;
 }
 .hero-scroll-hint {
   position: absolute; bottom: 16px; left: 50%;
@@ -438,6 +445,7 @@ section { padding: 0 24px; }
   <!-- HERO -->
   <section class="hero" id="hero-section">
     <div class="hero-bg" id="hero-bg"></div>
+    <video class="hero-video" id="hero-video" autoplay muted loop playsinline></video>
     <div class="hero-bg-placeholder" id="hero-placeholder">
       <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="0.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </div>
@@ -593,13 +601,23 @@ section { padding: 0 24px; }
 
   // Hero
   const heroBg = document.getElementById('hero-bg');
+  const heroVideo = document.getElementById('hero-video');
   const heroPlaceholder = document.getElementById('hero-placeholder');
-  const heroTestImg = new Image();
-  heroTestImg.onload = () => {
-    heroBg.style.backgroundImage = `url('${C.photos.hero}')`;
-    heroPlaceholder.style.display = 'none';
-  };
-  heroTestImg.src = C.photos.hero;
+  const heroSrc = C.photos.hero || '';
+  if (heroSrc.match(/\.(mp4|webm|mov)(\?|$)/i)) {
+    heroVideo.src = heroSrc;
+    heroVideo.style.display = 'block';
+    heroBg.style.display = 'none';
+    heroVideo.addEventListener('loadeddata', () => { heroPlaceholder.style.display = 'none'; });
+  } else {
+    heroVideo.style.display = 'none';
+    const heroTestImg = new Image();
+    heroTestImg.onload = () => {
+      heroBg.style.backgroundImage = `url('${heroSrc}')`;
+      heroPlaceholder.style.display = 'none';
+    };
+    heroTestImg.src = heroSrc;
+  }
 
   // 히어로 배지: 번호 없으면 숨김, 정당 없으면 숨김
   const heroBadge = document.getElementById('hero-badge');
@@ -883,13 +901,16 @@ section { padding: 0 24px; }
 
   // ========== HERO PARALLAX ==========
   const heroBgEl = document.getElementById('hero-bg');
+  const heroVideoEl = document.getElementById('hero-video');
   const heroScrollHint = document.querySelector('.hero-scroll-hint');
   let ticking = false;
   window.addEventListener('scroll', () => {
     if (!ticking) {
       requestAnimationFrame(() => {
         const scrollY = window.scrollY;
-        heroBgEl.style.transform = `translateY(${scrollY * 0.35}px) scale(${1 + scrollY * 0.0003})`;
+        const transform = `translateY(${scrollY * 0.35}px) scale(${1 + scrollY * 0.0003})`;
+        heroBgEl.style.transform = transform;
+        heroVideoEl.style.transform = transform;
         if (heroScrollHint) {
           heroScrollHint.style.opacity = Math.max(0, 0.4 - scrollY * 0.005);
         }

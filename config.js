@@ -54,7 +54,7 @@ const CONFIG = {
   // ─── 사진 ───
   // photos/ 폴더에 같은 이름으로 사진을 넣으세요
   photos: {
-    hero: "photos/hero.jpg",             // 히어로 배경: 세로형 3:4 권장
+    hero: "photos/hero.mp4",             // 히어로 배경: 이미지(jpg/png) 또는 영상(mp4/webm) 가능
     profile: "photos/profile.jpg",       // 프로필 배경: 가로형 16:9 권장
     gallery: [                           // 현장 활동: 가로형 16:9 권장
       { src: "photos/gallery1.jpg", caption: "경북교육 살리기 70일 대장정" },
