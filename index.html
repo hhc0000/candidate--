@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title id="page-title">후보 홈페이지</title>
+<meta name="description" id="meta-desc" content="">
+<meta property="og:title" id="og-title" content="">
+<meta property="og:description" id="og-desc" content="">
+<meta property="og:image" id="og-image" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  background: #ffffff;
+  color: #1d1d1f;
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+/* ===== VARIABLES ===== */
+:root {
+  --primary: #1A56DB;
+  --primary-light: #f0f4ff;
+  --primary-dark: #1344AE;
+  --text: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary: #aeaeb2;
+  --bg: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --border: rgba(0,0,0,0.06);
+  --radius: 20px;
+  --radius-sm: 14px;
+  --handwriting: 'Gowun Batang', serif;
+}
+
+/* ===== LAYOUT ===== */
+.container { max-width: 480px; margin: 0 auto; background: var(--bg); }
+section { padding: 0 24px; }
+
+/* ===== HERO — DRAMATIC FULL VIEWPORT ===== */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center top;
+  z-index: 0;
+  will-change: transform;
+  transition: transform 0.05s linear;
+}
+.hero-bg-placeholder {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, #f8f8fa 0%, #e8e8ed 40%, #d4d4d9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+}
+.hero-bg-placeholder svg { opacity: 0.15; }
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 12%,
+    rgba(255,255,255,0.6) 35%, rgba(255,255,255,0.1) 55%,
+    rgba(255,255,255,0) 70%);
+  z-index: 1;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  padding: 0 28px 48px;
+  text-align: left;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--primary); color: #fff;
+  padding: 6px 16px 6px 6px; border-radius: 100px;
+  font-size: 14px; font-weight: 600; margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+.hero-number {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px;
+  background: rgba(255,255,255,0.25); border-radius: 50%;
+  font-size: 14px; font-weight: 800;
+}
+.hero h1 {
+  font-size: 48px; font-weight: 900; line-height: 1.08;
+  letter-spacing: -2px; color: var(--text); margin-bottom: 14px;
+}
+.hero-slogan {
+  font-size: 19px; font-weight: 400; color: var(--text-secondary);
+  line-height: 1.55; letter-spacing: -0.3px;
+}
+.hero-district {
+  margin-top: 20px; font-size: 13px; color: var(--text-tertiary);
+  font-weight: 400; letter-spacing: 0.5px;
+}
+.hero-scroll-hint {
+  position: absolute; bottom: 16px; left: 50%;
+  transform: translateX(-50%); z-index: 2;
+  width: 24px; height: 40px;
+  border: 2px solid var(--text-tertiary); border-radius: 12px; opacity: 0.4;
+}
+.hero-scroll-hint::after {
+  content: ''; position: absolute; top: 6px; left: 50%;
+  transform: translateX(-50%); width: 3px; height: 8px;
+  background: var(--text-tertiary); border-radius: 2px;
+  animation: scrollDot 1.8s ease-in-out infinite;
+}
+@keyframes scrollDot {
+  0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 0.3; transform: translateX(-50%) translateY(12px); }
+}
+
+/* ===== STICKY NAV ===== */
+.sticky-nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--border);
+}
+.sticky-nav-inner {
+  display: flex; overflow-x: auto;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 8px;
+}
+.sticky-nav-inner::-webkit-scrollbar { display: none; }
+.sticky-nav a {
+  flex-shrink: 0; padding: 14px 16px; font-size: 14px; font-weight: 500;
+  color: var(--text-tertiary); transition: color 0.3s;
+  position: relative; white-space: nowrap;
+}
+.sticky-nav a.active { color: var(--primary); font-weight: 600; }
+.sticky-nav a.active::after {
+  content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
+  height: 2px; background: var(--primary); border-radius: 1px;
+}
+
+/* ===== SECTION HEADERS ===== */
+.sh { padding-top: 64px; padding-bottom: 4px; }
+.sh-label { font-size: 15px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+.sh-title {
+  font-family: var(--handwriting);
+  font-size: 28px; font-weight: 700; color: var(--text);
+  line-height: 1.3; letter-spacing: -0.3px;
+}
+
+/* ===== GREETING — 필기체 서명 ===== */
+.greeting-card {
+  margin-top: 24px; padding: 28px;
+  background: var(--bg-secondary); border-radius: var(--radius);
+}
+.greeting-text {
+  font-family: var(--handwriting);
+  font-size: 23px; line-height: 1.8; color: #333;
+  word-break: keep-all; font-weight: 400;
+}
+.greeting-sign {
+  margin-top: 28px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+  text-align: right;
+  font-size: 14px; color: var(--text-secondary); line-height: 1.8;
+}
+.greeting-sign strong {
+  display: block;
+  font-family: var(--handwriting);
+  font-size: 32px; font-weight: 700;
+  color: var(--text); letter-spacing: 2px;
+}
+
+/* ===== PROFILE — FULLSCREEN BANNER ===== */
+.profile-section {
+  position: relative; width: 100%;
+  aspect-ratio: 16 / 9; overflow: hidden;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding: 0; margin-top: 64px;
+}
+.profile-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center center;
+  z-index: 0;
+}
+.profile-bg-placeholder {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, #f0f0f2 0%, #e0e0e5 50%, #d0d0d5 100%);
+  display: flex; align-items: center; justify-content: center; z-index: 0;
+}
+.profile-bg-placeholder svg { opacity: 0.12; }
+.profile-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 20%,
+    rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 70%);
+  z-index: 1;
+}
+.profile-content {
+  position: relative; z-index: 2; padding: 0 28px 36px;
+}
+.profile-name {
+  font-family: var(--handwriting);
+  font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -0.3px;
+  line-height: 1.3; margin-top: 2px;
+}
+
+/* Timeline below profile */
+.timeline-section { padding: 16px 24px 0; }
+.timeline { list-style: none; }
+.timeline li {
+  position: relative; padding-left: 28px; padding-bottom: 20px;
+  font-size: 15px; color: #444; line-height: 1.55;
+}
+.timeline li::before {
+  content: ''; position: absolute; left: 0; top: 6px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #fff; border: 2.5px solid var(--primary);
+}
+.timeline li::after {
+  content: ''; position: absolute; left: 4.5px; top: 20px;
+  width: 1px; height: calc(100% - 8px); background: #e5e5ea;
+}
+.timeline li:last-child::after { display: none; }
+.timeline li:last-child { padding-bottom: 0; }
+.timeline .year {
+  font-weight: 700; color: var(--primary); font-size: 13px;
+  display: block; margin-bottom: 1px;
+}
+
+/* ===== PLEDGES ===== */
+.pledge-list { margin-top: 24px; margin-bottom: 0; }
+.pledge-card {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 22px 0; border-bottom: 1px solid var(--border);
+}
+.pledge-card:last-child { border-bottom: none; }
+.pledge-num-badge {
+  width: 44px; height: 44px; border-radius: 14px;
+  background: var(--primary-light);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.pledge-num-badge span { font-size: 22px; }
+.pledge-content { flex: 1; padding-top: 2px; }
+.pledge-title {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.3px; margin-bottom: 4px;
+}
+.pledge-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.55; }
+
+/* ===== VIDEO ===== */
+#video-list { margin-top: 24px; }
+.video-item { margin-bottom: 20px; border-radius: 16px; overflow: hidden; }
+.video-item:last-child { margin-bottom: 0; }
+.video-item iframe {
+  width: 100%; aspect-ratio: 16 / 9; border: none; display: block;
+  border-radius: 16px;
+}
+
+/* ===== GALLERY — AUTO SLIDE + POPUP ===== */
+.gallery-track-wrap {
+  position: relative; overflow: hidden;
+  margin-top: 24px;
+}
+.gallery-track {
+  display: flex; gap: 14px;
+  padding: 0 24px;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: grab;
+}
+.gallery-track.dragging { cursor: grabbing; transition: none; }
+.gallery-item {
+  flex-shrink: 0; width: 280px;
+  user-select: none; -webkit-user-select: none;
+}
+.gallery-item img {
+  width: 100%; height: 200px; object-fit: cover;
+  border-radius: var(--radius-sm); background: var(--bg-secondary);
+  pointer-events: none;
+}
+.gallery-caption {
+  padding: 10px 4px 0; font-size: 13px;
+  color: var(--text-secondary); font-weight: 400;
+}
+.gallery-dots {
+  display: flex; justify-content: center; gap: 6px;
+  margin-top: 16px; padding-bottom: 8px;
+}
+.gallery-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #d1d1d6; transition: all 0.3s;
+}
+.gallery-dot.active {
+  width: 20px; border-radius: 3px; background: var(--primary);
+}
+
+/* Gallery popup */
+.gallery-popup {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.gallery-popup.open { opacity: 1; pointer-events: auto; }
+.gallery-popup img {
+  max-width: 92%; max-height: 80vh;
+  border-radius: 12px; object-fit: contain;
+  transform: scale(0.9); transition: transform 0.3s;
+}
+.gallery-popup.open img { transform: scale(1); }
+.gallery-popup-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: none;
+  color: #fff; font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.gallery-popup-caption {
+  position: absolute; bottom: 32px; left: 0; right: 0;
+  text-align: center; color: rgba(255,255,255,0.8);
+  font-size: 14px;
+}
+
+/* ===== CTA — 간결한 연락처 ===== */
+.cta-area {
+  margin-top: 64px; margin-bottom: 20px;
+  padding: 36px 24px;
+  background: var(--bg-secondary); border-radius: var(--radius);
+  text-align: center;
+}
+.cta-area h3 {
+  font-size: 24px; font-weight: 800; color: var(--text);
+  letter-spacing: -0.5px; line-height: 1.35; margin-bottom: 8px;
+}
+.cta-area p {
+  font-size: 14px; color: var(--text-secondary);
+  margin-bottom: 28px; line-height: 1.5;
+}
+.cta-buttons { display: flex; flex-direction: column; gap: 10px; }
+.cta-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px 24px; border-radius: 14px;
+  font-size: 16px; font-weight: 600; letter-spacing: -0.2px;
+  transition: transform 0.15s, opacity 0.15s;
+}
+.cta-btn:active { transform: scale(0.97); opacity: 0.85; }
+.cta-btn-primary { background: var(--primary); color: #fff; }
+.cta-btn-secondary { background: #fff; color: var(--text); border: 1px solid #e5e5ea; }
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center; padding: 32px 24px 48px;
+  font-size: 12px; color: var(--text-tertiary); line-height: 1.8;
+}
+.footer-brand {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 600; color: var(--text-secondary);
+  margin-top: 12px; font-size: 12px;
+}
+.footer-divider { width: 100%; height: 1px; background: var(--border); margin-bottom: 24px; }
+
+/* ===== FLOATING BTN ===== */
+.float-contact {
+  position: fixed; bottom: 28px; right: 20px; z-index: 100;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+.float-contact:active { transform: scale(0.9); }
+
+/* ===== ANIMATIONS ===== */
+.reveal { opacity: 0; transform: translateY(32px); }
+.reveal.visible {
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.7s cubic-bezier(0.25,0.46,0.45,0.94),
+              transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.reveal-stagger .reveal-child { opacity: 0; transform: translateY(20px); }
+.reveal-stagger.visible .reveal-child {
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.5s cubic-bezier(0.25,0.46,0.45,0.94),
+              transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+
+/* ===== TABLET+ ===== */
+@media (min-width: 520px) {
+  body { background: #f5f5f7; }
+  .container {
+    max-width: 480px; margin: 0 auto;
+    min-height: 100vh; box-shadow: 0 0 80px rgba(0,0,0,0.06);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="app">
+
+  <!-- HERO -->
+  <section class="hero" id="hero-section">
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-bg-placeholder" id="hero-placeholder">
+      <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="0.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge" id="hero-badge">
+        <span class="hero-number" id="hero-number"></span>
+        <span id="hero-party"></span>
+      </div>
+      <h1 id="hero-name"></h1>
+      <p class="hero-slogan" id="hero-slogan"></p>
+      <p class="hero-district" id="hero-district"></p>
+    </div>
+    <div class="hero-scroll-hint"></div>
+  </section>
+
+  <!-- STICKY NAV -->
+  <nav class="sticky-nav" id="sticky-nav">
+    <div class="sticky-nav-inner">
+      <a data-nav="greeting" data-target="sec-greeting">인사말</a>
+      <a data-nav="profile" data-target="sec-profile">프로필</a>
+      <a data-nav="pledges" data-target="sec-pledges">공약</a>
+      <a data-nav="gallery" data-target="sec-gallery">활동</a>
+      <a data-nav="contact" data-target="sec-contact">연락처</a>
+    </div>
+  </nav>
+
+  <!-- GREETING -->
+  <section id="sec-greeting" data-section="greeting">
+    <div class="sh reveal">
+      <div class="sh-label">인사말</div>
+      <div class="sh-title">주민 여러분께<br>드리는 인사</div>
+    </div>
+    <div class="greeting-card reveal">
+      <p class="greeting-text" id="greeting-text"></p>
+      <div class="greeting-sign" id="greeting-sign">
+        <span id="greeting-title-line"></span><br>
+        <strong id="greeting-name"></strong> 드림
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE — FULLSCREEN -->
+  <div class="profile-section reveal" id="sec-profile" data-section="profile">
+    <div class="profile-bg" id="profile-bg"></div>
+    <div class="profile-bg-placeholder" id="profile-placeholder">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="0.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <div class="profile-overlay"></div>
+    <div class="profile-content">
+      <div class="sh-label" style="color: var(--primary);">약력</div>
+      <div class="profile-name" id="profile-name"></div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline-section">
+    <ul class="timeline reveal-stagger" id="career-list"></ul>
+  </div>
+
+  <!-- PLEDGES -->
+  <section id="sec-pledges" data-section="pledges">
+    <div class="sh reveal">
+      <div class="sh-label">핵심 공약</div>
+      <div class="sh-title" id="pledge-header-title"></div>
+    </div>
+    <div class="pledge-list reveal-stagger" id="pledge-list"></div>
+  </section>
+
+  <!-- VIDEO -->
+  <section class="video-section reveal" style="padding: 0 24px;">
+    <div class="sh reveal">
+      <div class="sh-label">영상으로 만나기</div>
+      <div class="sh-title" id="video-title"></div>
+    </div>
+    <div id="video-list"></div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="sec-gallery" data-section="gallery" style="padding:0;">
+    <div style="padding-left: 24px; padding-right: 24px;" class="sh reveal">
+      <div class="sh-label">현장 활동</div>
+      <div class="sh-title">주민과 함께한<br>순간들</div>
+    </div>
+    <div class="gallery-track-wrap">
+      <div class="gallery-track" id="gallery-track"></div>
+    </div>
+    <div class="gallery-dots" id="gallery-dots"></div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="sec-contact" data-section="contact" style="padding:0 24px;">
+    <div class="cta-area reveal">
+      <h3 id="cta-title"></h3>
+      <p id="cta-desc"></p>
+      <div class="cta-buttons" id="cta-buttons"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-divider"></div>
+    <div>본 페이지는 선거운동 목적으로 제작되었습니다.</div>
+    <div id="footer-info"></div>
+  </footer>
+</div>
+
+<!-- GALLERY POPUP -->
+<div class="gallery-popup" id="gallery-popup">
+  <button class="gallery-popup-close" id="popup-close">&times;</button>
+  <img id="popup-img" src="" alt="">
+  <div class="gallery-popup-caption" id="popup-caption"></div>
+</div>
+
+<!-- FLOATING CONTACT -->
+<a class="float-contact" id="float-btn" href="tel:">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+</a>
+
+<!-- CONFIG: config.js 파일만 수정하면 됩니다 -->
+<script src="config.js"></script>
+<script>
+
+// ========== RENDER ==========
+(function render() {
+  const C = CONFIG;
+  const root = document.documentElement;
+
+  // Force scroll to top on load
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+
+  // Theme
+  root.style.setProperty('--primary', C.color);
+  root.style.setProperty('--primary-light', hexToRgba(C.color, 0.08));
+  root.style.setProperty('--primary-dark', adjustColor(C.color, -30));
+
+  // Meta
+  document.getElementById('page-title').textContent = `${C.name} - ${C.district} ${C.type}`;
+  document.getElementById('meta-desc').content = C.slogan.replace(/\n/g, ' ');
+  document.getElementById('og-title').content = C.number ? `기호 ${C.number}번 ${C.name}` : C.name;
+  document.getElementById('og-desc').content = C.slogan.replace(/\n/g, ' ');
+  if (C.ogImage) document.getElementById('og-image').content = C.ogImage;
+
+  // Hero
+  const heroBg = document.getElementById('hero-bg');
+  const heroPlaceholder = document.getElementById('hero-placeholder');
+  const heroTestImg = new Image();
+  heroTestImg.onload = () => {
+    heroBg.style.backgroundImage = `url('${C.photos.hero}')`;
+    heroPlaceholder.style.display = 'none';
+  };
+  heroTestImg.src = C.photos.hero;
+
+  // 히어로 배지: 번호 없으면 숨김, 정당 없으면 숨김
+  const heroBadge = document.getElementById('hero-badge');
+  if (C.number) {
+    document.getElementById('hero-number').textContent = C.number;
+  } else {
+    document.getElementById('hero-number').style.display = 'none';
+    heroBadge.style.padding = '8px 20px';
+  }
+  if (C.party) {
+    document.getElementById('hero-party').textContent = C.party;
+  }
+  if (!C.number && !C.party) {
+    heroBadge.style.display = 'none';
+  }
+  document.getElementById('hero-name').textContent = C.name;
+  document.getElementById('hero-slogan').innerHTML = C.slogan.replace(/\n/g, '<br>');
+  document.getElementById('hero-district').textContent = `${C.district} ${C.type}`;
+
+  // Greeting (handwriting sign)
+  document.getElementById('greeting-text').innerHTML = C.greeting.replace(/\n/g, '<br>');
+  document.getElementById('greeting-title-line').textContent = `${C.district} ${C.type || '후보'}`;
+  document.getElementById('greeting-name').textContent = C.name;
+
+  // Profile fullscreen
+  const profBg = document.getElementById('profile-bg');
+  const profPlaceholder = document.getElementById('profile-placeholder');
+  const profTestImg = new Image();
+  profTestImg.onload = () => {
+    profBg.style.backgroundImage = `url('${C.photos.profile}')`;
+    profPlaceholder.style.display = 'none';
+  };
+  profTestImg.src = C.photos.profile;
+  // 받침 유무에 따라 이/가 자동 선택
+  const lastChar = C.name.charAt(C.name.length - 1);
+  const hasJongseong = (lastChar.charCodeAt(0) - 0xAC00) % 28 !== 0;
+  document.getElementById('profile-name').textContent = `${C.name}${hasJongseong ? '이' : '가'} 걸어온 길`;
+
+  // Career timeline
+  const careerList = document.getElementById('career-list');
+  C.career.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'reveal-child';
+    li.style.transitionDelay = `${i * 0.08}s`;
+    li.innerHTML = `<span class="year">${item.year}</span>${item.text}`;
+    careerList.appendChild(li);
+  });
+
+  // Pledges
+  document.getElementById('pledge-header-title').innerHTML =
+    `${C.name} ${C.type}의<br>${C.pledges.length}가지 약속`;
+
+  const pledgeList = document.getElementById('pledge-list');
+  C.pledges.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'pledge-card reveal-child';
+    card.style.transitionDelay = `${i * 0.08}s`;
+    card.innerHTML = `
+      <div class="pledge-num-badge"><span>${p.icon}</span></div>
+      <div class="pledge-content">
+        <div class="pledge-title">${p.title}</div>
+        <div class="pledge-desc">${p.desc}</div>
+      </div>`;
+    pledgeList.appendChild(card);
+  });
+
+  // ========== VIDEO ==========
+  if (C.videos && C.videos.length > 0) {
+    document.getElementById('video-title').innerHTML = `${C.name} ${C.type}를<br>영상으로 만나다`;
+    const videoList = document.getElementById('video-list');
+    C.videos.forEach(v => {
+      const id = v.url.match(/(?:v=|youtu\.be\/)([^&]+)/)?.[1] || '';
+      videoList.innerHTML += `<div class="video-item">
+        <iframe src="https://www.youtube.com/embed/${id}" allowfullscreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+      </div>`;
+    });
+  } else {
+    document.querySelector('.video-section').style.display = 'none';
+  }
+
+  // ========== GALLERY (auto-slide + drag + popup) ==========
+  const galleryTrack = document.getElementById('gallery-track');
+  const dotsContainer = document.getElementById('gallery-dots');
+  const galleryData = C.photos.gallery;
+
+  galleryData.forEach((g, i) => {
+    galleryTrack.innerHTML += `
+      <div class="gallery-item" data-idx="${i}">
+        <img src="${g.src}" alt="${g.caption}" loading="lazy">
+        <div class="gallery-caption">${g.caption}</div>
+      </div>`;
+    const dot = document.createElement('div');
+    dot.className = 'gallery-dot' + (i === 0 ? ' active' : '');
+    dotsContainer.appendChild(dot);
+  });
+
+  let currentSlide = 0;
+  const slideWidth = 294; // 280 + 14 gap
+  const dots = dotsContainer.children;
+
+  function goToSlide(idx) {
+    currentSlide = idx;
+    if (currentSlide >= galleryData.length) currentSlide = 0;
+    if (currentSlide < 0) currentSlide = galleryData.length - 1;
+    galleryTrack.style.transform = `translateX(${-currentSlide * slideWidth + 24}px)`;
+    Array.from(dots).forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  }
+
+  // Auto-slide every 4s
+  let autoSlide = setInterval(() => goToSlide(currentSlide + 1), 4000);
+
+  function resetAutoSlide() {
+    clearInterval(autoSlide);
+    autoSlide = setInterval(() => goToSlide(currentSlide + 1), 4000);
+  }
+
+  // Drag/swipe
+  let dragStartX = 0, dragDelta = 0, isDragging = false;
+  galleryTrack.addEventListener('pointerdown', (e) => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragDelta = 0;
+    galleryTrack.classList.add('dragging');
+  });
+  document.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    dragDelta = e.clientX - dragStartX;
+    galleryTrack.style.transform =
+      `translateX(${-currentSlide * slideWidth + 24 + dragDelta}px)`;
+  });
+  // Click popup
+  const popup = document.getElementById('gallery-popup');
+  const popupImg = document.getElementById('popup-img');
+  const popupCaption = document.getElementById('popup-caption');
+
+  document.addEventListener('pointerup', (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    galleryTrack.classList.remove('dragging');
+    if (Math.abs(dragDelta) > 10) {
+      // Was dragging
+      if (Math.abs(dragDelta) > 60) {
+        goToSlide(currentSlide + (dragDelta < 0 ? 1 : -1));
+      } else {
+        goToSlide(currentSlide);
+      }
+    } else {
+      // Was a tap — open popup
+      goToSlide(currentSlide);
+      const item = e.target.closest('.gallery-item');
+      if (item) {
+        const idx = parseInt(item.dataset.idx);
+        popupImg.src = galleryData[idx].src;
+        popupCaption.textContent = galleryData[idx].caption;
+        popup.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    resetAutoSlide();
+  });
+
+  document.getElementById('popup-close').addEventListener('pointerup', (e) => {
+    e.stopPropagation();
+    closePopup();
+  });
+  popup.addEventListener('pointerup', (e) => {
+    if (e.target === popup) closePopup();
+  });
+
+  function closePopup() {
+    popup.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  goToSlide(0);
+
+  // ========== CTA — 전화, 블로그, 인스타, 유튜브 ==========
+  document.getElementById('cta-title').innerHTML = `${C.name} ${C.type}에게<br>연락하기`;
+  document.getElementById('cta-desc').textContent = C.contact.office || '';
+  const ctaButtons = document.getElementById('cta-buttons');
+
+  if (C.contact.phone) {
+    ctaButtons.innerHTML += `<a class="cta-btn cta-btn-primary" href="tel:${C.contact.phone}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      전화하기</a>`;
+  }
+  if (C.contact.blog) {
+    ctaButtons.innerHTML += `<a class="cta-btn cta-btn-secondary" href="${C.contact.blog}" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect width="20" height="20" rx="4" fill="#03C75A"/><path d="M11.35 10.25L8.4 6H6v8h2.65V9.75L11.6 14H14V6h-2.65v4.25z" fill="#fff"/></svg>
+      네이버 블로그</a>`;
+  }
+  if (C.contact.instagram) {
+    ctaButtons.innerHTML += `<a class="cta-btn cta-btn-secondary" href="${C.contact.instagram}" target="_blank">
+      <svg width="18" height="18" viewBox="0 0 24 24"><defs><radialGradient id="ig" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#fdf497"/><stop offset="5%" stop-color="#fdf497"/><stop offset="45%" stop-color="#fd5949"/><stop offset="60%" stop-color="#d6249f"/><stop offset="90%" stop-color="#285AEB"/></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#ig)"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1.2" fill="#fff"/><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
+      인스타그램</a>`;
+  }
+  if (C.contact.youtube) {
+    ctaButtons.innerHTML += `<a class="cta-btn cta-btn-secondary" href="${C.contact.youtube}" target="_blank">
+      <svg width="20" height="18" viewBox="0 0 28 20"><rect width="28" height="20" rx="4" fill="#FF0000"/><polygon points="11,4.5 11,15.5 20,10" fill="#fff"/></svg>
+      유튜브</a>`;
+  }
+  if (C.contact.facebook) {
+    ctaButtons.innerHTML += `<a class="cta-btn cta-btn-secondary" href="${C.contact.facebook}" target="_blank">
+      <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path d="M16.67 15.47l.55-3.47H13.9V9.87c0-.95.47-1.87 1.95-1.87h1.5V5.08s-1.37-.23-2.67-.23c-2.73 0-4.5 1.65-4.5 4.64V12H7.28v3.47h2.9V24h3.72V15.47h2.77z" fill="#fff"/></svg>
+      페이스북</a>`;
+  }
+
+  // Float
+  if (C.contact.phone) {
+    document.getElementById('float-btn').href = `tel:${C.contact.phone}`;
+  }
+
+  // Footer
+  document.getElementById('footer-info').textContent =
+    [C.party, C.name, `${C.district} ${C.type}`].filter(Boolean).join(' | ');
+
+  // ========== SCROLL ANIMATIONS ==========
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => revealObserver.observe(el));
+
+  // ========== STICKY NAV ==========
+  // Nav click: scroll without changing URL hash
+  document.querySelectorAll('[data-target]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.getElementById(a.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  const sections = document.querySelectorAll('[data-section]');
+  const navLinks = document.querySelectorAll('[data-nav]');
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.dataset.section;
+        navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav === id));
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' });
+  sections.forEach(s => navObserver.observe(s));
+
+  // ========== HERO PARALLAX ==========
+  const heroBgEl = document.getElementById('hero-bg');
+  const heroScrollHint = document.querySelector('.hero-scroll-hint');
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        heroBgEl.style.transform = `translateY(${scrollY * 0.35}px) scale(${1 + scrollY * 0.0003})`;
+        if (heroScrollHint) {
+          heroScrollHint.style.opacity = Math.max(0, 0.4 - scrollY * 0.005);
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+})();
+
+// ========== UTILS ==========
+function adjustColor(hex, amount) {
+  hex = hex.replace('#', '');
+  const num = parseInt(hex, 16);
+  let r = Math.min(255, Math.max(0, (num >> 16) + amount));
+  let g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+  let b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+  return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+}
+function hexToRgba(hex, alpha) {
+  hex = hex.replace('#', '');
+  const r = parseInt(hex.substring(0,2), 16);
+  const g = parseInt(hex.substring(2,4), 16);
+  const b = parseInt(hex.substring(4,6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+</script>
+</body>
+</html>
